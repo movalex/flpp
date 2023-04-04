@@ -2,7 +2,6 @@ import re
 import sys
 from numbers import Number
 
-import six
 
 ERRORS = {
     "unexp_end_string": "Unexpected end of string while parsing Lua string.",
@@ -41,7 +40,7 @@ class SLPP(object):
         self.tab = "\t"
 
     def decode(self, text):
-        if not text or not isinstance(text, six.string_types):
+        if not text or not isinstance(text, str):
             return
         self.text = text
         self.at, self.ch, self.depth = 0, "", 0
@@ -59,7 +58,7 @@ class SLPP(object):
             x
             for x in obj
             if isinstance(x, Number)
-            or (isinstance(x, six.string_types) and len(x) < 10)
+            or (isinstance(x, str) and len(x) < 10)
         ]
         return len(length_numbers) == len(obj)
 
@@ -70,9 +69,7 @@ class SLPP(object):
 
         if isinstance(obj, str):
             s += '"%s"' % obj.replace(r'"', r"\"")
-        elif six.PY2 and isinstance(obj, unicode):
-            s += '"%s"' % obj.encode("utf-8").replace(r'"', r"\"")
-        elif six.PY3 and isinstance(obj, bytes):
+        elif isinstance(obj, bytes):
             s += '"{}"'.format("".join(r"\x{:02x}".format(c) for c in obj))
         elif isinstance(obj, bool):
             s += str(obj).lower()
@@ -85,7 +82,7 @@ class SLPP(object):
             if len(obj) == 0 or (not isinstance(obj, dict) and check_length(obj)):
                 newline = tab = ""
             dp = tab * self.depth
-            s += "%s{%s" % (tab * (self.depth - 2), newline)
+            s += "{%s" % newline
             if isinstance(obj, dict):
                 key_list = [
                         "%s" if not k.find(":") > 0 else '["%s"]' for k in obj.keys()
@@ -210,7 +207,7 @@ class SLPP(object):
                                 key
                                 for key in o
                                 if isinstance(
-                                    key, six.string_types + (float, bool, tuple)
+                                    key, (str, float, bool, tuple)
                                 )
                             ]
                         )
