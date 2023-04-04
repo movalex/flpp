@@ -27,7 +27,7 @@ class ParseError(Exception):
     pass
 
 
-class SLPP(object):
+class SLPP():
     def __init__(self):
         self.text = ""
         self.ch = ""
@@ -62,6 +62,19 @@ class SLPP(object):
         ]
         return len(length_numbers) == len(obj)
 
+    def build_keys(self, obj: dict):
+        for key in obj.keys():
+            if isinstance(key, int):
+                yield f"[{key}]"
+            elif isinstance(key, str) and key.find(":") >= 0:
+                yield f'["{key}"]'
+            else:
+                yield f'{key}'
+    
+    def build_content(self, indent, key_list, obj):
+        for (k, v), key in zip(obj.items(), key_list):
+            yield f"{indent}{key} = {self.__encode(v)}"
+
     def __encode(self, obj):
         s = ""
         tab = self.tab
@@ -79,23 +92,18 @@ class SLPP(object):
             s += str(obj)
         elif isinstance(obj, (list, tuple, dict)):
             self.depth += 1
-            if len(obj) == 0 or (not isinstance(obj, dict) and check_length(obj)):
+            if len(obj) == 0 or (not isinstance(obj, dict) and self.check_length(obj)):
                 newline = tab = ""
-            dp = tab * self.depth
+            indent = tab * self.depth
             s += "{%s" % newline
             if isinstance(obj, dict):
-                key_list = [
-                        "%s" if not k.find(":") > 0 else '["%s"]' for k in obj.keys()
-                ]
-                contents = [
-                    dp + (key + " = %s") % (k, self.__encode(v))
-                    for (k, v), key in zip(obj.items(), key_list)
-                ]
-                s += (",%s" % newline).join(contents)
+                key_list = list(self.build_keys(obj))
+                contents = list(self.build_content(indent, key_list, obj))
+                s += (f",{newline}").join(contents)
             else:
-                s += (",%s" % newline).join([dp + self.__encode(el) for el in obj])
+                s += (f",{newline}").join([indent + self.__encode(element) for element in obj])
             self.depth -= 1
-            s += "%s%s}" % (newline, tab * self.depth)
+            s += f"{newline}{tab * self.depth}" + "}"
         return s
 
     def white(self):
