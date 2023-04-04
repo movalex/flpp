@@ -27,7 +27,7 @@ class ParseError(Exception):
     pass
 
 
-class SLPP():
+class SLPP:
     def __init__(self):
         self.text = ""
         self.ch = ""
@@ -57,8 +57,7 @@ class SLPP():
         length_numbers = [
             x
             for x in obj
-            if isinstance(x, Number)
-            or (isinstance(x, str) and len(x) < 10)
+            if isinstance(x, Number) or (isinstance(x, str) and len(x) < 10)
         ]
         return len(length_numbers) == len(obj)
 
@@ -69,8 +68,8 @@ class SLPP():
             elif isinstance(key, str) and key.find(":") >= 0:
                 yield f'["{key}"]'
             else:
-                yield f'{key}'
-    
+                yield f"{key}"
+
     def build_content(self, indent, key_list, obj):
         for (k, v), key in zip(obj.items(), key_list):
             yield f"{indent}{key} = {self.__encode(v)}"
@@ -101,7 +100,9 @@ class SLPP():
                 contents = list(self.build_content(indent, key_list, obj))
                 s += (f",{newline}").join(contents)
             else:
-                s += (f",{newline}").join([indent + self.__encode(element) for element in obj])
+                s += (f",{newline}").join(
+                    [indent + self.__encode(element) for element in obj]
+                )
             self.depth -= 1
             s += f"{newline}{tab * self.depth}" + "}"
         return s
@@ -214,9 +215,7 @@ class SLPP():
                             [
                                 key
                                 for key in o
-                                if isinstance(
-                                    key, (str, float, bool, tuple)
-                                )
+                                if isinstance(key, (str, float, bool, tuple))
                             ]
                         )
                         == 0
