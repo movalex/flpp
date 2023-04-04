@@ -51,9 +51,9 @@ class SLPP:
 
     def encode(self, obj):
         self.depth = 0
-        return self.__encode(obj)
+        return self._encode(obj)
 
-    def check_length(self, obj) -> bool:
+    def _check_length(self, obj) -> bool:
         length_numbers = [
             x
             for x in obj
@@ -61,7 +61,7 @@ class SLPP:
         ]
         return len(length_numbers) == len(obj)
 
-    def build_keys(self, obj: dict):
+    def _build_keys(self, obj: dict):
         for key in obj.keys():
             if isinstance(key, int):
                 yield f"[{key}]"
@@ -70,11 +70,11 @@ class SLPP:
             else:
                 yield f"{key}"
 
-    def build_content(self, indent, key_list, obj):
+    def _build_content(self, indent, key_list, obj):
         for (k, v), key in zip(obj.items(), key_list):
-            yield f"{indent}{key} = {self.__encode(v)}"
+            yield f"{indent}{key} = {self._encode(v)}"
 
-    def __encode(self, obj):
+    def _encode(self, obj):
         s = ""
         tab = self.tab
         newline = self.newline
@@ -91,17 +91,17 @@ class SLPP:
             s += str(obj)
         elif isinstance(obj, (list, tuple, dict)):
             self.depth += 1
-            if len(obj) == 0 or (not isinstance(obj, dict) and self.check_length(obj)):
+            if len(obj) == 0 or (not isinstance(obj, dict) and self._check_length(obj)):
                 newline = tab = ""
             indent = tab * self.depth
             s += "{%s" % newline
             if isinstance(obj, dict):
-                key_list = list(self.build_keys(obj))
-                contents = list(self.build_content(indent, key_list, obj))
+                key_list = list(self._build_keys(obj))
+                contents = list(self._build_content(indent, key_list, obj))
                 s += (f",{newline}").join(contents)
             else:
                 s += (f",{newline}").join(
-                    [indent + self.__encode(element) for element in obj]
+                    [indent + self._encode(element) for element in obj]
                 )
             self.depth -= 1
             s += f"{newline}{tab * self.depth}" + "}"
