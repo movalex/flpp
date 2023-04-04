@@ -65,7 +65,7 @@ class SLPP:
         for key in obj.keys():
             if isinstance(key, int):
                 yield f"[{key}]"
-            elif isinstance(key, str) and key.find(":") >= 0:
+            elif isinstance(key, str) and ":" in key:
                 yield f'["{key}"]'
             else:
                 yield f"{key}"
