@@ -540,7 +540,6 @@
 				PrevCtrlActiveColor = 4278190335,
 				RulersShow = true
 			},
-			
 			Configs = {
 				ACEScgtorec709 = {
 					PrevCtrlInactiveColor = 4278255360,
