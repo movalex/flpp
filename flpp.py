@@ -18,7 +18,7 @@ class ParseError(Exception):
     pass
 
 
-class SLPP:
+class FLPP:
     def __init__(self):
         self.text = ""
         self.ch = ""
@@ -316,6 +316,6 @@ class SLPP:
         return num
 
 
-slpp = SLPP()
+flpp = FLPP()
 
-__all__ = ["slpp"]
+__all__ = ["flpp"]

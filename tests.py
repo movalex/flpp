@@ -1,9 +1,9 @@
 import unittest
 
-from slpp import slpp
+from flpp import flpp
 
 """
-Tests for slpp
+Tests for flpp
 """
 
 
@@ -72,29 +72,29 @@ class TestUtilityFunctions(unittest.TestCase):
         self.assertRaises(AssertionError, differ, "4", "no")
 
 
-class TestSLPP(unittest.TestCase):
+class Testflpp(unittest.TestCase):
     def test_numbers(self):
         # Integer and float:
-        self.assertEqual(slpp.decode("3"), 3)
-        self.assertEqual(slpp.decode("4.1"), 4.1)
-        self.assertEqual(slpp.encode(3), "3")
-        self.assertEqual(slpp.encode(4.1), "4.1")
+        self.assertEqual(flpp.decode("3"), 3)
+        self.assertEqual(flpp.decode("4.1"), 4.1)
+        self.assertEqual(flpp.encode(3), "3")
+        self.assertEqual(flpp.encode(4.1), "4.1")
 
         # Negative float:
-        self.assertEqual(slpp.decode("-0.45"), -0.45)
-        self.assertEqual(slpp.encode(-0.45), "-0.45")
+        self.assertEqual(flpp.decode("-0.45"), -0.45)
+        self.assertEqual(flpp.encode(-0.45), "-0.45")
 
         # Scientific:
-        self.assertEqual(slpp.decode("3e-7"), 3e-7)
-        self.assertEqual(slpp.decode("-3.23e+17"), -3.23e17)
-        self.assertEqual(slpp.encode(3e-7), "3e-07")
-        self.assertEqual(slpp.encode(-3.23e17), "-3.23e+17")
+        self.assertEqual(flpp.decode("3e-7"), 3e-7)
+        self.assertEqual(flpp.decode("-3.23e+17"), -3.23e17)
+        self.assertEqual(flpp.encode(3e-7), "3e-07")
+        self.assertEqual(flpp.encode(-3.23e17), "-3.23e+17")
 
         # Hex:
-        self.assertEqual(slpp.decode("0x3a"), 0x3A)
+        self.assertEqual(flpp.decode("0x3a"), 0x3A)
 
         differ(
-            slpp.decode(
+            flpp.decode(
                 """{
             ID = 0x74fa4cae,
             Version = 0x07c2,
@@ -105,25 +105,25 @@ class TestSLPP(unittest.TestCase):
         )
 
     def test_bool(self):
-        self.assertEqual(slpp.encode(True), "true")
-        self.assertEqual(slpp.encode(False), "false")
+        self.assertEqual(flpp.encode(True), "true")
+        self.assertEqual(flpp.encode(False), "false")
 
-        self.assertEqual(slpp.decode("true"), True)
-        self.assertEqual(slpp.decode("false"), False)
+        self.assertEqual(flpp.decode("true"), True)
+        self.assertEqual(flpp.decode("false"), False)
 
     def test_nil(self):
-        self.assertEqual(slpp.encode(None), "nil")
-        self.assertEqual(slpp.decode("nil"), None)
+        self.assertEqual(flpp.encode(None), "nil")
+        self.assertEqual(flpp.decode("nil"), None)
 
     def test_table(self):
         # Bracketed string key:
-        self.assertEqual(slpp.decode('{["10"] = 1}'), {"10": 1})
+        self.assertEqual(flpp.decode('{["10"] = 1}'), {"10": 1})
 
         # Values-only table:
-        self.assertEqual(slpp.decode('{"10"}'), {0: "10"})
+        self.assertEqual(flpp.decode('{"10"}'), {0: "10"})
 
         # Last zero
-        self.assertEqual(slpp.decode("{0, 1, 0}"), {0: 0, 1: 1, 2: 0})
+        self.assertEqual(flpp.decode("{0, 1, 0}"), {0: 0, 1: 1, 2: 0})
 
         # Fusion preferences table
         data = '{\n\tSubFrame = {\n\t\t{\n\t\t\tZoneInfo = {\n\t\t\t\tAuxRight = {\n\t\t\t\t\tExpanded = true\n\t\t\t\t},\n\t\t\t\t["!Left"] = {},\n\t\t\t\tAuxLeft = {\n\t\t\t\t\tExpanded = true\n\t\t\t\t},\n\t\t\t\tRight = {\n\t\t\t\t\tExpanded = true,\n\t\t\t\t\tAdjust = false\n\t\t\t\t},\n\t\t\t\tLeft = {\n\t\t\t\t\tExpanded = false\n\t\t\t\t},\n\t\t\t\t["!Right"] = {}\n\t\t\t},\n\t\t\tUseWindowsDefaults = false,\n\t\t\tWidth = 1920,\n\t\t\tLayout = {\n\t\t\t\t{\n\t\t\t\t\tID = "LayoutStrip",\n\t\t\t\t\tFixedY = 36,\n\t\t\t\t\tRatioX = 1,\n\t\t\t\t\tFlat = true\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t{\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\tID = "Viewer1",\n\t\t\t\t\t\t\t\t\tRatioY = 1,\n\t\t\t\t\t\t\t\t\tRatioX = 0.5\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\tID = "Viewer2",\n\t\t\t\t\t\t\t\t\tRatioX = 0.5\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\tRatioX = 1,\n\t\t\t\t\t\t\t\tRatioY = 1,\n\t\t\t\t\t\t\t\tColumns = 2\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\tID = "Time",\n\t\t\t\t\t\t\t\tFixedY = 83,\n\t\t\t\t\t\t\t\tFlat = true\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\tRatioX = 1,\n\t\t\t\t\t\t\tRows = 2,\n\t\t\t\t\t\t\tRatioY = 100\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\tID = "Nodes",\n\t\t\t\t\t\t\tRatioY = 0.999008919722497,\n\t\t\t\t\t\t\tRatioX = 1\n\t\t\t\t\t\t},\n\t\t\t\t\t\tRatioX = 1,\n\t\t\t\t\t\tRows = 2,\n\t\t\t\t\t\tRatioY = 100\n\t\t\t\t\t},\n\t\t\t\t\t{\n\t\t\t\t\t\tID = "Inspector",\n\t\t\t\t\t\tRatioY = 1,\n\t\t\t\t\t\tRatioX = 1\n\t\t\t\t\t},\n\t\t\t\t\tColumns = 2,\n\t\t\t\t\tRatioY = 1\n\t\t\t\t},\n\t\t\t\tRatioX = 1,\n\t\t\t\tRows = 2,\n\t\t\t\tRatioY = 1\n\t\t\t},\n\t\t\tLeft = 0,\n\t\t\tOpenOnNew = true,\n\t\t\tTop = 27,\n\t\t\tFrameTypeID = "ChildFrame",\n\t\t\tViewInfo = {\n\t\t\t\tViewer1 = {\n\t\t\t\t\tShow = true,\n\t\t\t\t\tRatioY = 1,\n\t\t\t\t\tRatioX = 0.5\n\t\t\t\t},\n\t\t\t\tInnerLeft = {},\n\t\t\t\tMainSplit = {\n\t\t\t\t\tRatioX = 100,\n\t\t\t\t\tRatioY = 0.999008919722498\n\t\t\t\t},\n\t\t\t\tCenterSplit = {\n\t\t\t\t\tRatioX = 1,\n\t\t\t\t\tRatioY = 100\n\t\t\t\t},\n\t\t\t\tViewer2 = {\n\t\t\t\t\tShow = true,\n\t\t\t\t\tAdjust = false,\n\t\t\t\t\tRatioY = 1,\n\t\t\t\t\tMRU = 1,\n\t\t\t\t\tRatioX = 0.5\n\t\t\t\t},\n\t\t\t\tComments = {\n\t\t\t\t\tShow = false\n\t\t\t\t},\n\t\t\t\tTime = {\n\t\t\t\t\tShow = true,\n\t\t\t\t\tPixelY = 83,\n\t\t\t\t\tAdjust = false,\n\t\t\t\t\tMRU = 1,\n\t\t\t\t\tRatioX = 1\n\t\t\t\t},\n\t\t\t\tInnerColumns = {\n\t\t\t\t\tRatioX = 100,\n\t\t\t\t\tRatioY = 2.0009910802775\n\t\t\t\t},\n\t\t\t\tKeyframes = {\n\t\t\t\t\tShow = false\n\t\t\t\t},\n\t\t\t\tLayoutStrip = {\n\t\t\t\t\tShow = true,\n\t\t\t\t\tRatioX = 1\n\t\t\t\t},\n\t\t\t\tInspector = {\n\t\t\t\t\tShow = true,\n\t\t\t\t\tRatioY = 1,\n\t\t\t\t\tRatioX = 1,\n\t\t\t\t\tPixelX = 420\n\t\t\t\t},\n\t\t\t\tMediaPool = {\n\t\t\t\t\tShow = false\n\t\t\t\t},\n\t\t\t\tClips = {\n\t\t\t\t\tShow = false\n\t\t\t\t},\n\t\t\t\tOuterColumns = {\n\t\t\t\t\tRatioX = 1,\n\t\t\t\t\tRatioY = 1\n\t\t\t\t},\n\t\t\t\tMetadata = {\n\t\t\t\t\tShow = false\n\t\t\t\t},\n\t\t\t\tActionStrip = {\n\t\t\t\t\tShow = false\n\t\t\t\t},\n\t\t\t\tEffects = {\n\t\t\t\t\tShow = false\n\t\t\t\t},\n\t\t\t\tOuterLeft = {},\n\t\t\t\tViewerSplit = {\n\t\t\t\t\tRatioX = 1,\n\t\t\t\t\tRatioY = 1\n\t\t\t\t},\n\t\t\t\tNodes = {\n\t\t\t\t\tShow = true,\n\t\t\t\t\tRatioY = 0.999008919722497,\n\t\t\t\t\tRatioX = 1\n\t\t\t\t},\n\t\t\t\tOuterRight = {\n\t\t\t\t\tPixelX = 420,\n\t\t\t\t\tRatioY = 100\n\t\t\t\t},\n\t\t\t\tInnerRight = {},\n\t\t\t\tSpline = {\n\t\t\t\t\tShow = false\n\t\t\t\t}\n\t\t\t},\n\t\t\tViews = ordered()\n\t\t\t{\n\t\t\t\tEffects = MultiView\n\t\t\t\t{\n\t\t\t\t\tViewList = ordered()\n\t\t\t\t\t{\n\t\t\t\t\t\tEffectView = "EffectView"\n\t\t\t\t\t},\n\t\t\t\t\tActive = "EffectView"\n\t\t\t\t},\n\t\t\t\tNodes = MultiView\n\t\t\t\t{\n\t\t\t\t\tViewList = ordered()\n\t\t\t\t\t{\n\t\t\t\t\t\tFlowView = "FlowView"\n\t\t\t\t\t},\n\t\t\t\t\tActive = "FlowView",\n\t\t\t\t\tNames = {\n\t\t\t\t\t\tFlowView = "FlowView"\n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\t\tKeyframes = MultiView\n\t\t\t\t{\n\t\t\t\t\tViewList = ordered()\n\t\t\t\t\t{\n\t\t\t\t\t\tTimelineView = "TimelineView"\n\t\t\t\t\t},\n\t\t\t\t\tActive = "TimelineView",\n\t\t\t\t\tNames = {\n\t\t\t\t\t\tTimelineView = "TimelineView"\n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\t\tSpline = MultiView\n\t\t\t\t{\n\t\t\t\t\tViewList = ordered()\n\t\t\t\t\t{\n\t\t\t\t\t\tSplineView = "SplineEditorView"\n\t\t\t\t\t},\n\t\t\t\t\tActive = "SplineView",\n\t\t\t\t\tNames = {\n\t\t\t\t\t\tSplineView = "SplineView"\n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\t\tInspector = MultiView\n\t\t\t\t{\n\t\t\t\t\tViewList = ordered()\n\t\t\t\t\t{\n\t\t\t\t\t\tTools = "ControlView",\n\t\t\t\t\t\tModifiers = "ModifierView"\n\t\t\t\t\t},\n\t\t\t\t\tActive = "Tools"\n\t\t\t\t},\n\t\t\t\tViewer1 = MultiView\n\t\t\t\t{\n\t\t\t\t\tViewList = ordered()\n\t\t\t\t\t{\n\t\t\t\t\t\tLeftView = "PreviewContainer"\n\t\t\t\t\t},\n\t\t\t\t\tActive = "LeftView",\n\t\t\t\t\tNames = {\n\t\t\t\t\t\tLeftView = "LeftView"\n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\t\tViewer2 = MultiView\n\t\t\t\t{\n\t\t\t\t\tViewList = ordered()\n\t\t\t\t\t{\n\t\t\t\t\t\tRightView = "PreviewContainer"\n\t\t\t\t\t},\n\t\t\t\t\tActive = "RightView",\n\t\t\t\t\tNames = {\n\t\t\t\t\t\tRightView = "RightView"\n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\t\tTime = "TimeView",\n\t\t\t\tActionStrip = "ActionStripView",\n\t\t\t\tLayoutStrip = "LayoutStripView"\n\t\t\t},\n\t\t\tHeight = 1049,\n\t\t\tMode = 3,\n\t\t\tLayoutPreset = 0,\n\t\t\tPresetName = "Default"\n\t\t}\n\t},\n\tChildFrame = {}\n}'
@@ -296,39 +296,39 @@ class TestSLPP(unittest.TestCase):
             "ChildFrame": {},
         }
 
-        self.assertEqual(slpp.encode(expected_result), data)
+        self.assertEqual(flpp.encode(expected_result), data)
 
     def test_string(self):
         # Escape test:
-        self.assertEqual(slpp.decode(r"'test\'s string'"), "test's string")
+        self.assertEqual(flpp.decode(r"'test\'s string'"), "test's string")
 
         # Add escaping on encode:
         self.assertEqual(
-            slpp.encode({"a": 'func("call()");'}), '{\n\ta = "func(\\"call()\\");"\n}'
+            flpp.encode({"a": 'func("call()");'}), '{\n\ta = "func(\\"call()\\");"\n}'
         )
 
         # Strings inside double brackets
         longstr = ' ("word") . [ ["word"] . ["word"] . ("word" | "word" | "word" | "word") . ["word"] ] '
-        self.assertEqual(slpp.decode("[[" + longstr + "]]"), longstr)
+        self.assertEqual(flpp.decode("[[" + longstr + "]]"), longstr)
         self.assertEqual(
-            slpp.decode("{ [0] = [[" + longstr + ']], [1] = "a"}'),
+            flpp.decode("{ [0] = [[" + longstr + ']], [1] = "a"}'),
             {"[0]": longstr, "[1]": "a"},
         )
 
     def test_basic(self):
         # No data loss:
         data = '{ array = { 65, 23, 5 }, dict = { string = "value", array = { 3, 6, 4}, mixed = { 43, 54.3, false, string = "value", 9 } } }'
-        d = slpp.decode(data)
-        differ(d, slpp.decode(slpp.encode(d)))
+        d = flpp.decode(data)
+        differ(d, flpp.decode(flpp.encode(d)))
 
     def test_unicode(self):
-        self.assertEqual(slpp.encode("Привет"), '"Привет"')
-        self.assertEqual(slpp.encode({"s": "Привет"}), '{\n\ts = "Привет"\n}')
+        self.assertEqual(flpp.encode("Привет"), '"Привет"')
+        self.assertEqual(flpp.encode({"s": "Привет"}), '{\n\ts = "Привет"\n}')
 
     def test_consistency(self):
         def t(data):
-            d = slpp.decode(data)
-            self.assertEqual(d, slpp.decode(slpp.encode(d)))
+            d = flpp.decode(data)
+            self.assertEqual(d, flpp.decode(flpp.encode(d)))
 
         t(
             '{ 43, 54.3, false, string = "value", 9, [4] = 111, [1] = 222, [2.1] = "text" }'
@@ -341,7 +341,7 @@ class TestSLPP(unittest.TestCase):
 
     def test_comments(self):
         def t(data, res):
-            self.assertEqual(slpp.decode(data), res)
+            self.assertEqual(flpp.decode(data), res)
 
         t(
             '-- starting comment\n{\n["multiline_string"] = "A multiline string where one of the lines starts with\n-- two dashes",\n-- middle comment\n["another_multiline_string"] = "A multiline string where one of the lines starts with\n-- two dashes\nfollowed by another line",\n["trailing_comment"] = "A string with" -- a trailing comment\n}\n-- ending comment',

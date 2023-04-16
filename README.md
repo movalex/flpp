@@ -1,5 +1,5 @@
-#### SLPP
-SLPP is a simple lua-python data structures parser.
+#### FLPP
+Flpp is a simple lua-python data structures parser for Blacmagicdesign Fusion preferences files.
 
 Lua data check:
 
@@ -15,7 +15,7 @@ array   table: 0x2014200
 Parse lua data:
 
 ```python
->>> from slpp import slpp as lua
+>>> from flpp import flpp as lua
 >>> data = lua.decode('{ array = { 65, 23, 5 }, dict = { string = "value", array = { 3, 6, 4}, mixed = { 43, 54.3, false, string = "value", 9 } } }')
 >>> print data
 {'array': [65, 23, 5], 'dict': {'mixed': {0: 43, 1: 54.33, 2: False, 4: 9, 'string': 'value'}, 'array': [3, 6, 4], 'string': 'value'}}

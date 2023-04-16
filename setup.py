@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from setuptools import setup
 from os import path
 
@@ -7,15 +6,15 @@ with open(path.join(cur_dir, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='SLPP',
-    description='SLPP is a simple lua-python data structures parser',
+    name='FLPP',
+    description='FLPP is a simple lua-python data structures parser',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    version='1.2.3',
-    author='SirAnthony',
-    url='https://github.com/SirAnthony/slpp',
+    version='1.3.0',
+    author='SirAnthony, Alexey Bogomolov',
+    url='https://github.com/movalex/flpp',
     license='MIT',
     keywords=['lua'],
-    py_modules=['slpp'],
-    install_requires=['six'],
+    py_modules=['flpp'],
+    python_requires='>3.6'
 )
