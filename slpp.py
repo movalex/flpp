@@ -11,16 +11,7 @@ ERRORS = {
     "mfnumber_sci": "Malformed number (bad scientific format).",
 }
 
-
-def sequential(lst):
-    length = len(lst)
-    if length == 0 or lst[0] != 0:
-        return False
-    for i in range(length):
-        if i + 1 < length:
-            if lst[i] + 1 != lst[i + 1]:
-                return False
-    return True
+NAMED_TABLES = ("ordered()", "ViewOperator", "Input", "FuID", "MultiView")
 
 
 class ParseError(Exception):
@@ -35,9 +26,11 @@ class SLPP:
         self.len = 0
         self.depth = 0
         self.space = re.compile("\s", re.M)
-        self.alnum = re.compile("\w", re.M)
         self.newline = "\n"
         self.tab = "\t"
+        self.regex_pattern = "|".join(NAMED_TABLES)
+        self.regex_pattern = self.regex_pattern.replace("(", r"\(")
+        self.regex_pattern = self.regex_pattern.replace(")", r"\)")
 
     def decode(self, text):
         if not text or not isinstance(text, str):
@@ -46,7 +39,7 @@ class SLPP:
         self.at, self.ch, self.depth = 0, "", 0
         self.len = len(text)
         self.next_chr()
-        result = self.value()
+        result = self.item()
         return result
 
     def encode(self, obj):
@@ -64,15 +57,26 @@ class SLPP:
     def _build_keys(self, obj: dict):
         for key in obj.keys():
             if isinstance(key, int):
-                yield f"[{key}]"
-            elif isinstance(key, str) and ":" in key:
+                yield key
+            elif (
+                isinstance(key, str)
+                and ":" in key
+                or re.match("^[0-9]|^!", key)
+            ):
                 yield f'["{key}"]'
             else:
                 yield f"{key}"
 
     def _build_content(self, indent, key_list, obj):
+        result = ""
         for (k, v), key in zip(obj.items(), key_list):
-            yield f"{indent}{key} = {self._encode(v)}"
+            try:
+                int(key)
+                # remove temporary numeric keys
+                result = f"{indent}{self._encode(v)}"
+            except ValueError:
+                result = f"{indent}{key} = {self._encode(v)}"
+            yield result
 
     def _encode(self, obj):
         s = ""
@@ -80,7 +84,10 @@ class SLPP:
         newline = self.newline
 
         if isinstance(obj, str):
-            s += '"%s"' % obj.replace(r'"', r"\"")
+            if not obj in NAMED_TABLES:
+                s += '"%s"' % obj.replace(r'"', r"\"")
+            else:
+                s += obj
         elif isinstance(obj, bytes):
             s += '"{}"'.format("".join(r"\x{:02x}".format(c) for c in obj))
         elif isinstance(obj, bool):
@@ -91,21 +98,26 @@ class SLPP:
             s += str(obj)
         elif isinstance(obj, (list, tuple, dict)):
             self.depth += 1
-            if len(obj) == 0 or (not isinstance(obj, dict) and self._check_length(obj)):
+            if len(obj) == 0 or (
+                not isinstance(obj, dict) and self._check_length(obj)
+            ):
                 newline = tab = ""
             indent = tab * self.depth
             s += "{%s" % newline
             if isinstance(obj, dict):
-                key_list = list(self._build_keys(obj))
-                contents = list(self._build_content(indent, key_list, obj))
-                s += (f",{newline}").join(contents)
+                key_list = self._build_keys(obj)
+                contents = self._build_content(indent, key_list, obj)
+                s += (f",{newline}").join(list(contents))
             else:
                 s += (f",{newline}").join(
                     [indent + self._encode(element) for element in obj]
                 )
             self.depth -= 1
             s += f"{newline}{tab * self.depth}" + "}"
-        return s
+
+        # remove commas from the named tables, like ordered(), MultiView etc.
+        output = re.sub(f"({self.regex_pattern}),", r"\1", s)
+        return output
 
     def white(self):
         while self.ch:
@@ -118,8 +130,9 @@ class SLPP:
     def comment(self):
         if self.ch == "-" and self.next_is("-"):
             self.next_chr()
-            # TODO: for fancy comments need to improve
-            multiline = self.next_chr() and self.ch == "[" and self.next_is("[")
+            multiline = (
+                self.next_chr() and self.ch == "[" and self.next_is("[")
+            )
             while self.ch:
                 if multiline:
                     if self.ch == "]" and self.next_is("]"):
@@ -138,7 +151,7 @@ class SLPP:
             return False
         return self.text[self.at] == value
 
-    def prev_is(self, value):
+    def prev_is(self, value: str):
         if self.at < 2:
             return False
         return self.text[self.at - 2] == value
@@ -151,17 +164,20 @@ class SLPP:
         self.at += 1
         return True
 
-    def value(self):
+    def item(self):
         self.white()
         if not self.ch:
             return
         if self.ch == "{":
-            return self.object()
+            return self.table_object()
         if self.ch == "[":
             self.next_chr()
         if self.ch in ['"', "'", "["]:
             return self.string(self.ch)
         if self.ch.isdigit() or self.ch == "-":
+            # handle braketed key format in the FloatView settings
+            if self.prev_is("["):
+                return f"[{self.number()}]"
             return self.number()
         return self.word()
 
@@ -186,53 +202,36 @@ class SLPP:
                 s += self.ch
         raise ParseError(ERRORS["unexp_end_string"])
 
-    def object(self):
-        o = {}
-        k = None
+    def table_object(self):
+        output = {}
+        key = None
         idx = 0
-        numeric_keys = False
         self.depth += 1
         self.next_chr()
         self.white()
         if self.ch and self.ch == "}":
             self.depth -= 1
             self.next_chr()
-            return o  # Exit here
+            return output
         else:
             while self.ch:
                 self.white()
                 if self.ch == "{":
-                    o[idx] = self.object()
+                    output[idx] = self.table_object()
                     idx += 1
                     continue
                 elif self.ch == "}":
                     self.depth -= 1
                     self.next_chr()
-                    if k is not None:
-                        o[idx] = k
-                    if (
-                        len(
-                            [
-                                key
-                                for key in o
-                                if isinstance(key, (str, float, bool, tuple))
-                            ]
-                        )
-                        == 0
-                    ):
-                        so = sorted([key for key in o])
-                        if sequential(so):
-                            ar = []
-                            for key in o:
-                                ar.insert(key, o[key])
-                            o = ar
-                    return o  # or here
+                    if key is not None:
+                        output[idx] = key
+                    return output
                 else:
                     if self.ch == ",":
                         self.next_chr()
                         continue
                     else:
-                        k = self.value()
+                        key = self.item()
                         if self.ch == "]":
                             self.next_chr()
                     self.white()
@@ -241,24 +240,28 @@ class SLPP:
                         self.next_chr()
                         self.white()
                         if ch == "=":
-                            o[k] = self.value()
+                            output[key] = self.item()
                         else:
-                            o[idx] = k
+                            output[idx] = key
                         idx += 1
-                        k = None
-        raise ParseError(ERRORS["unexp_end_table"])  # Bad exit here
+                        key = None
+        raise ParseError(ERRORS["unexp_end_table"])
 
-    words = {"true": True, "false": False, "nil": None}
+    bool_words = {"true": True, "false": False, "nil": None}
 
     def word(self):
-        s = ""
+        result_string = ""
         if self.ch != "\n":
-            s = self.ch
+            result_string = self.ch
         self.next_chr()
-        while self.ch is not None and self.alnum.match(self.ch) and s not in self.words:
-            s += self.ch
+        while (
+            self.ch is not None
+            and (self.ch.isalnum() or self.ch in ("(", ")"))
+            and not result_string in self.bool_words
+        ):
+            result_string += self.ch
             self.next_chr()
-        return self.words.get(s, s)
+        return self.bool_words.get(result_string, result_string)
 
     def number(self):
         def next_digit(err):
@@ -268,49 +271,49 @@ class SLPP:
                 raise ParseError(err)
             return n
 
-        n = ""
+        num = ""
         try:
             if self.ch == "-":
-                n += next_digit(ERRORS["mfnumber_minus"])
-            n += self.digit()
-            if n == "0" and self.ch in ["x", "X"]:
-                n += self.ch
+                num += next_digit(ERRORS["mfnumber_minus"])
+            num += self.digit()
+            if num == "0" and self.ch in ["x", "X"]:
+                num += self.ch
                 self.next_chr()
-                n += self.hex()
+                num += self.hex()
             else:
                 if self.ch and self.ch == ".":
-                    n += next_digit(ERRORS["mfnumber_dec_point"])
-                    n += self.digit()
+                    num += next_digit(ERRORS["mfnumber_dec_point"])
+                    num += self.digit()
                 if self.ch and self.ch in ["e", "E"]:
-                    n += self.ch
+                    num += self.ch
                     self.next_chr()
                     if not self.ch or self.ch not in ("+", "-"):
                         raise ParseError(ERRORS["mfnumber_sci"])
-                    n += next_digit(ERRORS["mfnumber_sci"])
-                    n += self.digit()
+                    num += next_digit(ERRORS["mfnumber_sci"])
+                    num += self.digit()
         except ParseError:
             t, e = sys.exc_info()[:2]
             print(e)
             return 0
         try:
-            return int(n, 0)
+            return int(num, 0)
         except:
             pass
-        return float(n)
+        return float(num)
 
     def digit(self):
-        n = ""
+        num = ""
         while self.ch and self.ch.isdigit():
-            n += self.ch
+            num += self.ch
             self.next_chr()
-        return n
+        return num
 
     def hex(self):
-        n = ""
+        num = ""
         while self.ch and (self.ch in "ABCDEFabcdef" or self.ch.isdigit()):
-            n += self.ch
+            num += self.ch
             self.next_chr()
-        return n
+        return num
 
 
 slpp = SLPP()
