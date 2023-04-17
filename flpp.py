@@ -202,6 +202,20 @@ class FLPP:
                 s += self.ch
         raise ParseError(ERRORS["unexp_end_string"])
 
+    @staticmethod
+    def table_object_keys(table_object):
+        return [
+            key
+            for key in table_object
+            if isinstance(key, (str, float, bool, tuple))
+        ]
+
+    def _empty_keys_to_list(self, table_object: dict):
+        empty_keys_values = []
+        for key in table_object:
+            empty_keys_values.insert(key, table_object[key])
+        return empty_keys_values
+
     def table_object(self):
         output = {}
         key = None
@@ -225,6 +239,8 @@ class FLPP:
                     self.next_chr()
                     if key is not None:
                         output[idx] = key
+                    if len(self.table_object_keys(output)) == 0:
+                        output = self._empty_keys_to_list(output)
                     return output
                 else:
                     if self.ch == ",":
