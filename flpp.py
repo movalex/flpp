@@ -29,8 +29,7 @@ class FLPP:
         self.newline = "\n"
         self.tab = "\t"
         self.regex_pattern = "|".join(NAMED_TABLES)
-        self.regex_pattern = self.regex_pattern.replace("(", r"\(")
-        self.regex_pattern = self.regex_pattern.replace(")", r"\)")
+        self.regex_pattern = re.sub("(\(|\))", r"\\\1", self.regex_pattern)
 
     def decode(self, text):
         if not text or not isinstance(text, str):
