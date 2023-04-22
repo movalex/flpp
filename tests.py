@@ -137,7 +137,11 @@ class Testflpp(unittest.TestCase):
         data = '{\n\t["!Left"] = {}\n}'
         self.assertEqual(flpp.encode(flpp.decode(data)), data)
 
-        # numbered keys
+        # key string starts with a number
+        data = '{\n\t["3DHistogram"] = {}\n}'
+        self.assertEqual(flpp.encode(flpp.decode(data)), data)
+
+        # key is a bracketed number
         data = "{\n\tFloatView = {\n\t\t[1] = {\n\t\t\tTop = -1\n\t\t}\n\t}\n}"
         self.assertEqual(flpp.encode(flpp.decode(data)), data)
 
