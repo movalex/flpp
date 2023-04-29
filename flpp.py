@@ -11,7 +11,25 @@ ERRORS = {
     "mfnumber_sci": "Malformed number (bad scientific format).",
 }
 
-NAMED_TABLES = ("ordered()", "ViewOperator", "Input", "FuID", "MultiView")
+NAMED_TABLES = (
+    "ordered()",
+    "ViewOperator",
+    "Input",
+    "FuID",
+    "MultiView",
+    # Fusion comp nodes
+    "Blur",
+    "BrightnessContrast",
+    "ColorCorrector",
+    "ColorCurves",
+    "CoordSpace",
+    "FastNoise",
+    "LUTBezier",
+    "OperatorInfo",
+    "TimelineView",
+    "Loader",
+    "SplineEditorView"
+)
 
 
 class ParseError(Exception):
@@ -28,8 +46,8 @@ class FLPP:
         self.space = re.compile("\s", re.M)
         self.newline = "\n"
         self.tab = "\t"
-        self.regex_pattern = "|".join(NAMED_TABLES)
-        self.regex_pattern = re.sub("(\(|\))", r"\\\1", self.regex_pattern)
+        self.regex_table_names = "|".join(NAMED_TABLES)
+        self.regex_table_names = re.sub("(\(|\))", r"\\\1", self.regex_table_names)
 
     def decode(self, text):
         if not text or not isinstance(text, str):
@@ -68,25 +86,23 @@ class FLPP:
 
     def _build_content(self, indent, key_list, obj):
         result = ""
-        for (k, v), key in zip(obj.items(), key_list):
+        for (_, value), key in zip(obj.items(), key_list):
             try:
                 int(key)
                 # remove temporary numeric keys
-                result = f"{indent}{self._encode(v)}"
+                result = f"{indent}{self._encode(value)}"
             except ValueError:
-                result = f"{indent}{key} = {self._encode(v)}"
+                result = f"{indent}{key} = {self._encode(value)}"
             yield result
 
     def _encode(self, obj):
         s = ""
+        # print(f"encoding: {obj}")
         tab = self.tab
         newline = self.newline
 
         if isinstance(obj, str):
-            if not obj in NAMED_TABLES:
-                s += '"%s"' % obj.replace(r'"', r"\"")
-            else:
-                s += obj
+            s += f'"{obj}"'
         elif isinstance(obj, bytes):
             s += '"{}"'.format("".join(r"\x{:02x}".format(c) for c in obj))
         elif isinstance(obj, bool):
@@ -115,7 +131,7 @@ class FLPP:
             s += f"{newline}{tab * self.depth}" + "}"
 
         # remove commas from the named tables, like ordered(), MultiView etc.
-        output = re.sub(f"({self.regex_pattern}),", r"\1", s)
+        output = re.sub(f"\"({self.regex_table_names})\"" + "\,(\n\t+\{)", r"\1\2", s)
         return output
 
     def white(self):
@@ -236,9 +252,11 @@ class FLPP:
                 elif self.ch == "}":
                     self.depth -= 1
                     self.next_chr()
-                    if key is not None:
+                    if key:
                         output[idx] = key
                     if len(self.table_object_keys(output)) == 0:
+                        # print(f"next ch: {self.next_is('=')}")
+                        # print(output)
                         output = self._empty_keys_to_list(output)
                     return output
                 else:
@@ -247,6 +265,7 @@ class FLPP:
                         continue
                     else:
                         key = self.item()
+                        print("key:", key)
                         if self.ch == "]":
                             self.next_chr()
                     self.white()
@@ -258,6 +277,7 @@ class FLPP:
                             output[key] = self.item()
                         else:
                             output[idx] = key
+                            print("output:", output)
                         idx += 1
                         key = None
         raise ParseError(ERRORS["unexp_end_table"])
