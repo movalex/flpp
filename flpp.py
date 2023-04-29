@@ -12,7 +12,7 @@ ERRORS = {
 }
 
 NAMED_TABLES = (
-    "ordered()",
+    "ordered\(\)",
     "ViewOperator",
     "Input",
     "FuID",
@@ -47,7 +47,6 @@ class FLPP:
         self.newline = "\n"
         self.tab = "\t"
         self.regex_table_names = "|".join(NAMED_TABLES)
-        self.regex_table_names = re.sub("(\(|\))", r"\\\1", self.regex_table_names)
 
     def decode(self, text):
         if not text or not isinstance(text, str):
@@ -291,7 +290,7 @@ class FLPP:
         self.next_chr()
         while (
             self.ch is not None
-            and (self.ch.isalnum() or self.ch in ("(", ")"))
+            and (self.ch.isalnum() or self.ch in ("(", ")", "_"))
             and not result_string in self.bool_words
         ):
             result_string += self.ch
