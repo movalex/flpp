@@ -6,7 +6,6 @@ from numbers import Number
 TODO:
 * add fusion tools registry to NAMED TABLES json automatically
 * do not parse floating number keys
-* last zero test fails
 """
 
 ERRORS = {
@@ -266,7 +265,7 @@ class FLPP:
                 elif self.ch == "}":
                     self.depth -= 1
                     self.next_chr()
-                    if key:
+                    if key is not None: # see last zero test
                         output[idx] = key
                     # fix Loader parsing
                     if output.get(1) == "Clip":
