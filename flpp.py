@@ -258,8 +258,6 @@ class FLPP:
                     if key:
                         output[idx] = key
                     if len(self.table_object_keys(output)) == 0:
-                        # print(f"next ch: {self.next_is('=')}")
-                        # print(output)
                         output = self._empty_keys_to_list(output)
                     return output
                 else:
@@ -268,7 +266,6 @@ class FLPP:
                         continue
                     else:
                         key = self.item()
-                        print("key:", key)
                         if self.ch == "]":
                             self.next_chr()
                     self.white()
@@ -280,7 +277,6 @@ class FLPP:
                             output[key] = self.item()
                         else:
                             output[idx] = key
-                            print("output:", output)
                         idx += 1
                         key = None
         raise ParseError(ERRORS["unexp_end_table"])
