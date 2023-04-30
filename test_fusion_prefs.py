@@ -4,7 +4,7 @@ from pprint import pprint
 from flpp import flpp
 from pathlib import Path
 
-FILE = "Fusion.comp"
+FILE = "Fusion.settings"
 
 file_name = Path(FILE).stem
 extension = Path(FILE).suffix
