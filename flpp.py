@@ -17,7 +17,7 @@ ERRORS = {
 }
 
 NAMED_TABLES = (
-    "ordered\(\)",
+    "ordered()",
     "ViewOperator",
     "Input",
     "FuID",
@@ -31,7 +31,7 @@ NAMED_TABLES = (
     "CoordSpace",
     "Displace3D",
     "FastNoise",
-    "Fuse\.Grade",
+    "Fuse.Grade",
     "Loader",
     "LUTBezier",
     "ImagePlane3D",
