@@ -59,10 +59,11 @@ class FLPP:
         self.space = re.compile("\s", re.M)
         self.newline = "\n"
         self.tab = "\t"
-        self.regex_table_names = self.build_escaped_regex(NAMED_TABLES)
+        self.named_table_pattern = self.build_escaped_regex(NAMED_TABLES)
 
     def build_escaped_regex(self, patterns: tuple):
-        return "|".join([re.escape(pattern) for pattern in patterns])
+        table_pattern = "|".join([re.escape(pattern) for pattern in patterns])
+        return re.compile(f'"({table_pattern})"' + "\,(\n\t+\{)")
 
     def decode(self, text):
         if not text or not isinstance(text, str):
@@ -147,9 +148,7 @@ class FLPP:
             s += f"{newline}{tab * self.depth}" + "}"
 
         # remove commas from the named tables, like ordered(), MultiView etc.
-        output = re.sub(
-            f'"({self.regex_table_names})"' + "\,(\n\t+\{)", r"\1\2", s
-        )
+        output = self.named_table_pattern.sub(r"\1\2", s)
         return output
 
     def white(self):
@@ -272,7 +271,7 @@ class FLPP:
                     self.next_chr()
                     if key is not None:  # see last zero test
                         output[idx] = key
-                    # fix Loader parsing
+                    # fix Loader clip parsing
                     if output.get(1) == "Clip":
                         output = {0: "Clip", 1: output[0]}
                     elif len(self.table_object_keys(output)) == 0:
