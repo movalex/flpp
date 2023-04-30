@@ -1,10 +1,8 @@
 import json
-import re
-from pprint import pprint
 from flpp import flpp
 from pathlib import Path
 
-FILE = "Fusion.settings"
+FILE = "Fusion.comp"
 
 file_name = Path(FILE).stem
 extension = Path(FILE).suffix
@@ -27,4 +25,3 @@ with open(f"{file_name}_modified{extension}", "w", encoding="utf-8") as out:
         print("Composition", file=out, end="")
     upd = flpp.encode(data)
     out.write(upd)
-
