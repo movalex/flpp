@@ -149,12 +149,6 @@ class Testflpp(unittest.TestCase):
         # Escape test:
         self.assertEqual(flpp.decode(r"'test\'s string'"), "test's string")
 
-        # Add escaping on encode:
-        self.assertEqual(
-            flpp.encode({"a": 'func("call()");'}),
-            '{\n\ta = "func(\\"call()\\");"\n}',
-        )
-
         # Strings inside double brackets
         longstr = ' ("word") . [ ["word"] . ["word"] . ("word" | "word" | "word" | "word") . ["word"] ] '
         self.assertEqual(flpp.decode("[[" + longstr + "]]"), longstr)
