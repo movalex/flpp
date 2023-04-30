@@ -5,6 +5,8 @@ from numbers import Number
 """
 TODO:
 * add fusion tools registry to NAMED TABLES json automatically
+* do not parse floating number keys
+* last zero test fails
 """
 
 ERRORS = {
