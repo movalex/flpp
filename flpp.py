@@ -4,7 +4,7 @@ from numbers import Number
 
 """
 TODO:
-* add fusion tools registry to NAMED TABLES json automatically
+* generate fusion tools registry for the NAMED_TABLES automatically
 * do not parse floating number keys
 """
 
