@@ -4,7 +4,7 @@ from numbers import Number
 
 """
 TODO:
-* Fix Loader Clips parsing, it is currently incorrectly interpreted as a list
+* fix square bracketed keys parsing, such as ["Gamut.SLogVersion"]
 """
 
 ERRORS = {
@@ -32,7 +32,8 @@ NAMED_TABLES = (
     "OperatorInfo",
     "TimelineView",
     "Loader",
-    "SplineEditorView"
+    "SplineEditorView",
+    "Clip"
 )
 
 
@@ -257,7 +258,9 @@ class FLPP:
                     self.next_chr()
                     if key:
                         output[idx] = key
-                    if len(self.table_object_keys(output)) == 0:
+                    if output.get(1) == "Clip":
+                        output = {0: "Clip", 1: output[0]}
+                    elif len(self.table_object_keys(output)) == 0:
                         output = self._empty_keys_to_list(output)
                     return output
                 else:
