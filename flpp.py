@@ -4,7 +4,7 @@ from numbers import Number
 
 """
 TODO:
-* fix square bracketed keys parsing, such as ["Gamut.SLogVersion"]
+* fix Fuse.Grade named tables parsing
 """
 
 ERRORS = {
@@ -24,16 +24,19 @@ NAMED_TABLES = (
     # Fusion comp nodes
     "Blur",
     "BrightnessContrast",
+    "Clip",
     "ColorCorrector",
     "ColorCurves",
     "CoordSpace",
     "FastNoise",
+    "Loader",
     "LUTBezier",
     "OperatorInfo",
-    "TimelineView",
-    "Loader",
     "SplineEditorView",
-    "Clip"
+    "TimelineView",
+    "Transform",
+    "Grade."
+    "ViewLUTOp"
 )
 
 
@@ -82,8 +85,9 @@ class FLPP:
             elif (
                 isinstance(key, str)
                 and ":" in key
-                or re.match("^[0-9]|^!", key)
+                or re.search("^[0-9]|^!|\.", key)
             ):
+                # parse bracketed keys, such as ["Gamut.SLogVersion"] or ["!Left"]
                 yield f'["{key}"]'
             else:
                 yield f"{key}"
@@ -258,6 +262,7 @@ class FLPP:
                     self.next_chr()
                     if key:
                         output[idx] = key
+                    # fix Loader parsing
                     if output.get(1) == "Clip":
                         output = {0: "Clip", 1: output[0]}
                     elif len(self.table_object_keys(output)) == 0:
