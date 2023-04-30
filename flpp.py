@@ -2,6 +2,10 @@ import re
 import sys
 from numbers import Number
 
+"""
+TODO:
+* Fix Loader Clips parsing, it is currently incorrectly interpreted as a list
+"""
 
 ERRORS = {
     "unexp_end_string": "Unexpected end of string while parsing Lua string.",
