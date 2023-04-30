@@ -4,7 +4,7 @@ from numbers import Number
 
 """
 TODO:
-* fix Fuse.Grade named tables parsing
+* add fusion tools registry to NAMED TABLES json automatically
 """
 
 ERRORS = {
@@ -29,14 +29,14 @@ NAMED_TABLES = (
     "ColorCurves",
     "CoordSpace",
     "FastNoise",
+    "Fuse\.Grade",
     "Loader",
     "LUTBezier",
     "OperatorInfo",
     "SplineEditorView",
     "TimelineView",
     "Transform",
-    "Grade."
-    "ViewLUTOp"
+    "ViewLUTOp",
 )
 
 
@@ -298,7 +298,7 @@ class FLPP:
         self.next_chr()
         while (
             self.ch is not None
-            and (self.ch.isalnum() or self.ch in ("(", ")", "_"))
+            and (self.ch.isalnum() or self.ch in ("(", ")", "_", "."))
             and not result_string in self.bool_words
         ):
             result_string += self.ch
