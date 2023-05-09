@@ -1,12 +1,8 @@
 import re
 import sys
+import json
 from numbers import Number
 
-"""
-TODO:
-* generate fusion tools registry for the NAMED_TABLES automatically
-* do not parse floating number keys
-"""
 
 ERRORS = {
     "unexp_end_string": "Unexpected end of string while parsing Lua string.",
@@ -16,34 +12,11 @@ ERRORS = {
     "mfnumber_sci": "Malformed number (bad scientific format).",
 }
 
-NAMED_TABLES = (
-    "ordered()",
-    "ViewOperator",
-    "Input",
-    "FuID",
-    "MultiView",
-    # Fusion comp nodes
-    "Blur",
-    "BrightnessContrast",
-    "Clip",
-    "ColorCorrector",
-    "ColorCurves",
-    "CoordSpace",
-    "Displace3D",
-    "FastNoise",
-    "Fuse.Grade",
-    "Loader",
-    "LUTBezier",
-    "ImagePlane3D",
-    "Note",
-    "OperatorInfo",
-    "SplineEditorView",
-    "StickyNoteInfo",
-    "TimelineView",
-    "Transform",
-    "ViewLUTOp",
-)
+NAMED_TABLES = ["ordered()"]
 
+with open("FuRegList.json", "r") as reg:
+    for entry in json.load(reg):
+        NAMED_TABLES.append(entry)
 
 class ParseError(Exception):
     pass
@@ -61,7 +34,7 @@ class FLPP:
         self.tab = "\t"
         self.named_table_pattern = self.build_escaped_regex(NAMED_TABLES)
 
-    def build_escaped_regex(self, patterns: tuple):
+    def build_escaped_regex(self, patterns: list):
         table_pattern = "|".join([re.escape(pattern) for pattern in patterns])
         return re.compile(f'"({table_pattern})"' + "\,(\n\t+\{)")
 
@@ -94,7 +67,7 @@ class FLPP:
             elif (
                 isinstance(key, str)
                 and ":" in key
-                or re.search("^[0-9]|^!|\.", key)
+                or re.search("^\d\D|^!|\.\D", key)
             ):
                 # parse bracketed keys, such as ["Gamut.SLogVersion"] or ["!Left"]
                 yield f'["{key}"]'
