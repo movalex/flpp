@@ -145,6 +145,10 @@ class Testflpp(unittest.TestCase):
         data = "{\n\tFloatView = {\n\t\t[1] = {\n\t\t\tTop = -1\n\t\t}\n\t}\n}"
         self.assertEqual(flpp.encode(flpp.decode(data)), data)
 
+        # key is float [0.396758742692536254]
+        data = "{\n\t[0.18476195900623] = {0.167478760189764}\n}"
+        self.assertEqual(flpp.encode(flpp.decode(data)), data)
+
     def test_string(self):
         # Escape test:
         self.assertEqual(flpp.decode(r"'test\'s string'"), "test's string")
