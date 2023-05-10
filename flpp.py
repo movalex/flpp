@@ -2,6 +2,7 @@ import re
 import sys
 import json
 from numbers import Number
+from pathlib import Path
 
 
 ERRORS = {
@@ -12,8 +13,9 @@ ERRORS = {
     "mfnumber_sci": "Malformed number (bad scientific format).",
 }
 
-
-with open("fusion_registry_list.json", "r") as reg:
+module = Path(__file__).parent
+regs_path = Path(module, "utils", "fusion_registry_list.json")
+with open(regs_path.as_posix(), "r") as reg:
     ordered_table_value = "ordered()"
     named_tables = json.load(reg)
     named_tables.append(ordered_table_value)
