@@ -7,14 +7,14 @@ with open(path.join(cur_dir, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='FLPP',
-    description='FLPP is a simple lua-python data structures parser',
+    description='FLPP is a simple lua-python data structures parser for Blackmagic Fusion',
     long_description=long_description,
     long_description_content_type='text/markdown',
     version='1.3.0',
     author='SirAnthony, Alexey Bogomolov',
     url='https://github.com/movalex/flpp',
     license='MIT',
-    keywords=['lua'],
+    keywords=['lua', 'fusion'],
     py_modules=['flpp'],
     python_requires='>3.6'
 )
