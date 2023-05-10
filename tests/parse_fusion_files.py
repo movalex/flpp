@@ -1,8 +1,8 @@
 import json
-from flpp import flpp
 from pathlib import Path
+from flpp import flpp
 
-FILE = "Fusion.comp"
+FILE = "tests/Fusion.comp"
 
 file_name = Path(FILE).stem
 extension = Path(FILE).suffix
