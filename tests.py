@@ -1,10 +1,5 @@
 import unittest
-
 from flpp import flpp
-
-"""
-Tests for flpp
-"""
 
 
 # Utility functions
