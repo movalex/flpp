@@ -1,4 +1,5 @@
 import json
+import sys
 
 try:
     import DaVinciResolveScript as bmd
@@ -13,6 +14,7 @@ except ImportError:
             "Unable to find Fusion script module."
             "Check the README and update PYTHONPATH accordingly"
         )
+        sys.exit()
 
 fu = bmd.scriptapp("Fusion")
 reg = [i.ID for i in fu.GetRegList().values()]
