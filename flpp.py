@@ -12,11 +12,12 @@ ERRORS = {
     "mfnumber_sci": "Malformed number (bad scientific format).",
 }
 
-NAMED_TABLES = ["ordered()"]
 
-with open("FuRegList.json", "r") as reg:
-    for entry in json.load(reg):
-        NAMED_TABLES.append(entry)
+with open("fusion_registry_list.json", "r") as reg:
+    ordered_table_value = "ordered()"
+    named_tables = json.load(reg)
+    named_tables.append(ordered_table_value)
+
 
 class ParseError(Exception):
     pass
@@ -32,7 +33,7 @@ class FLPP:
         self.space = re.compile("\s", re.M)
         self.newline = "\n"
         self.tab = "\t"
-        self.named_table_pattern = self.build_escaped_regex(NAMED_TABLES)
+        self.named_table_pattern = self.build_escaped_regex(named_tables)
 
     def build_escaped_regex(self, patterns: list):
         table_pattern = "|".join([re.escape(pattern) for pattern in patterns])
