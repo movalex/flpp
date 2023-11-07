@@ -4,9 +4,7 @@ import sys
 try:
     import DaVinciResolveScript as bmd
 except ImportError:
-    print(
-        "RESOLVE_SCRIPT_API is not set. Trying to import fusionscript directly"
-    )
+    print("RESOLVE_SCRIPT_API is not set. Trying to import fusionscript directly")
     try:
         import fusionscript as bmd
     except ImportError:
