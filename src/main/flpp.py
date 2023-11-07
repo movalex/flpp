@@ -14,13 +14,6 @@ ERRORS = {
 }
 
 
-regs_path = Path("src/main/utils/fusion_registry_list.json")
-with open(regs_path.as_posix(), "r") as reg:
-    ordered_table_value = "ordered()"
-    named_tables = json.load(reg)
-    named_tables.append(ordered_table_value)
-
-
 class ParseError(Exception):
     pass
 
@@ -35,7 +28,15 @@ class FLPP:
         self.space = re.compile("\s", re.M)
         self.newline = "\n"
         self.tab = "\t"
-        self.named_table_pattern = self.build_escaped_regex(named_tables)
+        self.named_table_pattern = self.fill_named_tables()
+
+    def fill_named_tables(self):
+        regs_path = Path("src/main/utils/fusion_registry_list.json")
+        with open(regs_path.as_posix(), "r") as reg:
+            ordered_table_value = "ordered()"
+            named_tables = json.load(reg)
+            named_tables.append(ordered_table_value)
+        return self.build_escaped_regex(named_tables)
 
     def build_escaped_regex(self, patterns: list):
         table_pattern = "|".join([re.escape(pattern) for pattern in patterns])
