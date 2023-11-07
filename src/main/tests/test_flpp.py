@@ -1,5 +1,10 @@
 import unittest
-from src.main.flpp import flpp
+
+try:
+    from src.main.flpp import flpp
+except ModuleNotFoundError:
+    # running tests locally
+    from main.flpp import flpp
 
 
 # Utility functions
