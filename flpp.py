@@ -13,13 +13,15 @@ ERRORS = {
     "mfnumber_sci": "Malformed number (bad scientific format).",
 }
 
-module = Path(__file__).parent
-regs_path = Path(module, "utils", "fusion_registry_list.json")
+
+
+regs_path = Path("utils/flpp_fusion_registry_list.json")
 with open(regs_path.as_posix(), "r") as reg:
     ordered_table_value = "ordered()"
     named_tables = json.load(reg)
     named_tables.append(ordered_table_value)
 
+print(named_tables)
 
 class ParseError(Exception):
     pass
