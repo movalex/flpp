@@ -14,9 +14,11 @@ def is_iterator(obj):
 
 
 def differ(value, origin):
+    error_message = f"Value [{value}] does not match original: [{origin}]"
+
     if type(value) is not type(origin):
         raise AssertionError(
-            "Types does not match: " f"{type(value)}, {type(origin)}"
+            "Types do not match: " f"{type(value)}, {type(origin)}"
         )
 
     if isinstance(origin, dict):
@@ -25,13 +27,12 @@ def differ(value, origin):
                 differ(value[key], item)
             except KeyError:
                 raise AssertionError(
-                    f"{value} not match original: {origin}; "
-                    f"Key: {key}, item: {item}"
+                    f"{error_message}\nKey: {key}, item: {item}"
                 )
         return
 
     if isinstance(origin, str):
-        assert value == origin, f"{value} not match original: {origin}."
+        assert value == origin, error_message
         return
 
     if is_iterator(origin):
@@ -40,13 +41,11 @@ def differ(value, origin):
                 differ(value[i], origin[i])
             except IndexError:
                 raise AssertionError(
-                    f"{value} not match original: {origin}. Item {origin[i]} not found"
+                    f"{error_message}. Item {origin[i]} not found"
                 )
         return
 
-    assert value == origin, "{0} not match original: {1}.".format(
-        value, origin
-    )
+    assert value == origin, error_message
 
 
 class TestUtilityFunctions(unittest.TestCase):
