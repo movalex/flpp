@@ -16,5 +16,5 @@ except ImportError:
 
 fu = bmd.scriptapp("Fusion")
 reg = [i.ID for i in fu.GetRegList().values()]
-with open("utils/fusion_registry_list.json", "w") as out:
+with open("src/main/utils/fusion_registry_list.json", "w") as out:
     json.dump(reg, out)

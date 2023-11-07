@@ -14,14 +14,12 @@ ERRORS = {
 }
 
 
-
-regs_path = Path("utils/flpp_fusion_registry_list.json")
+regs_path = Path("src/main/utils/fusion_registry_list.json")
 with open(regs_path.as_posix(), "r") as reg:
     ordered_table_value = "ordered()"
     named_tables = json.load(reg)
     named_tables.append(ordered_table_value)
 
-print(named_tables)
 
 class ParseError(Exception):
     pass
@@ -69,11 +67,7 @@ class FLPP:
         for key in obj.keys():
             if isinstance(key, int):
                 yield key
-            elif (
-                isinstance(key, str)
-                and ":" in key
-                or re.search("^\d\D|^!|\.\D", key)
-            ):
+            elif isinstance(key, str) and ":" in key or re.search("^\d\D|^!|\.\D", key):
                 # parse bracketed keys, such as ["Gamut.SLogVersion"] or ["!Left"]
                 yield f'["{key}"]'
             else:
@@ -108,9 +102,7 @@ class FLPP:
             s += str(obj)
         elif isinstance(obj, (list, tuple, dict)):
             self.depth += 1
-            if len(obj) == 0 or (
-                not isinstance(obj, dict) and self._check_length(obj)
-            ):
+            if len(obj) == 0 or (not isinstance(obj, dict) and self._check_length(obj)):
                 newline = tab = ""
             indent = tab * self.depth
             s += "{%s" % newline
@@ -140,9 +132,7 @@ class FLPP:
     def comment(self):
         if self.ch == "-" and self.next_is("-"):
             self.next_chr()
-            multiline = (
-                self.next_chr() and self.ch == "[" and self.next_is("[")
-            )
+            multiline = self.next_chr() and self.ch == "[" and self.next_is("[")
             while self.ch:
                 if multiline:
                     if self.ch == "]" and self.next_is("]"):
@@ -215,9 +205,7 @@ class FLPP:
     @staticmethod
     def table_object_keys(table_object):
         return [
-            key
-            for key in table_object
-            if isinstance(key, (str, float, bool, tuple))
+            key for key in table_object if isinstance(key, (str, float, bool, tuple))
         ]
 
     def _empty_keys_to_list(self, table_object: dict):

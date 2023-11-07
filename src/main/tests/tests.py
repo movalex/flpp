@@ -1,5 +1,5 @@
 import unittest
-from flpp import flpp
+from src.main.flpp import flpp
 
 
 # Utility functions
@@ -17,18 +17,14 @@ def differ(value, origin):
     error_message = f"Value [{value}] does not match original: [{origin}]"
 
     if type(value) is not type(origin):
-        raise AssertionError(
-            "Types do not match: " f"{type(value)}, {type(origin)}"
-        )
+        raise AssertionError("Types do not match: " f"{type(value)}, {type(origin)}")
 
     if isinstance(origin, dict):
         for key, item in origin.items():
             try:
                 differ(value[key], item)
             except KeyError:
-                raise AssertionError(
-                    f"{error_message}\nKey: {key}, item: {item}"
-                )
+                raise AssertionError(f"{error_message}\nKey: {key}, item: {item}")
         return
 
     if isinstance(origin, str):
@@ -40,9 +36,7 @@ def differ(value, origin):
             try:
                 differ(value[i], origin[i])
             except IndexError:
-                raise AssertionError(
-                    f"{error_message}. Item {origin[i]} not found"
-                )
+                raise AssertionError(f"{error_message}. Item {origin[i]} not found")
         return
 
     assert value == origin, error_message

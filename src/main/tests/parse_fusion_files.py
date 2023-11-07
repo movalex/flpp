@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from flpp import flpp
 
-FILE = "tests/Fusion.comp"
+FILE = r"C:\Users\videopro\Documents\github\flpp\src\tests\Fusion.masterprefs"
 
 file_name = Path(FILE).stem
 extension = Path(FILE).suffix
