@@ -36,7 +36,7 @@ def parse_examples(target_folder: Path):
 
         with open(parsed_file, "w", encoding="utf-8") as out:
             if extension == ".comp":
-                print("Composition", file=out, end="")
+                print("Composition", file=out, end=" ")
             upd = flpp.encode(data)
             out.write(upd)
 

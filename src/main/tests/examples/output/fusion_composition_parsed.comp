@@ -1,4 +1,4 @@
-Composition{
+Composition {
 	CurrentTime = 1381,
 	RenderRange = {1001,1500},
 	GlobalRange = {1001,1500},
@@ -21,7 +21,7 @@ Composition{
 				Clip
 				{
 					ID = "Clip1",
-					Filename = "/Volumes/Apacer PHD/RADUGA/Yandex.Disk.localized/00_People/Shootings/04_Sborka/02_BGs/Stills/04_R_Road_Refueler_BGs/v01/04_R_Road_Refueler_Night_BGs/04_R_Road_Refueler_Night_ BGs.png",
+					Filename = "/Volumes/Apacer PHD/04_R_Road_Refueler_Night_ BGs.png",
 					FormatID = "PNGFormat",
 					StartFrame = -1,
 					LengthSetManually = true,
@@ -67,7 +67,7 @@ Composition{
 				Clip
 				{
 					ID = "Clip1",
-					Filename = "/Volumes/Apacer PHD/RADUGA/Yandex.Disk.localized/00_People/Shootings/04_Sborka/02_BGs/Stills/04_R_Road_Refueler_BGs/v01/04_R_Road_Refueler_Night_BGs/04_R_Road_Refueler_Night_BGs.0001.exr",
+					Filename = "/Volumes/Apacer PHD/04_R_Road_Refueler_Night_BGs.0001.exr",
 					FormatID = "OpenEXRFormat",
 					StartFrame = 1,
 					LengthSetManually = true,
@@ -129,7 +129,7 @@ Composition{
 				Clip
 				{
 					ID = "Clip1",
-					Filename = "/Volumes/Apacer PHD/RADUGA/Yandex.Disk.localized/00_People/Shootings/04_Sborka/02_BGs/Stills/03_L_Sea_Cap_BGs/v01/03_L_Sea_Cap_Night_BGs.png",
+					Filename = "/Volumes/Apacer PHD/v01/03_L_Sea_Cap_Night_BGs.png",
 					FormatID = "PNGFormat",
 					StartFrame = -1,
 					LengthSetManually = true,
