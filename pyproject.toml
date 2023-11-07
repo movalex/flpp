@@ -5,9 +5,3 @@ description = 'FLPP is a simple lua-python data structures parser for Blackmagic
 readme = "README.md"
 requires-python = ">=3.7"
 authors = [{ name = "SirAnthony" }, { name = 'Alexey Bogomolov' }]
-
-[tool.setuptools.packages.find]
-where = ["utils"]
-
-[tool.setuptools.package-data]
-mypkg = ["*.json"]
