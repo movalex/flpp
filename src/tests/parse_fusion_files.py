@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from main.flpp import flpp
 
-FOLDER = Path("src/main/tests/examples").resolve()
+FOLDER = Path("src/tests/examples").resolve()
 
 
 def parse_examples(target_folder: Path):
